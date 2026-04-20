@@ -5,7 +5,7 @@
 > [!TIP]
 > Need help? Join our [Discord](https://discord.gg/ssXXFRmt5F) or email jesse@bentonow.com for personalized support.
 
-The Bento n8n Community Node makes it quick and easy to integrate Bento's powerful email marketing and automation platform directly into your n8n workflows. Send transactional emails, track events, manage subscribers, and execute advanced subscriber commands - all without leaving your automation environment.
+The Bento n8n Community Node installs a single **Bento** node in n8n with operations for subscribers, tags, fields, sequences, workflows, templates, broadcasts, analytics, validation, and Bento's experimental enrichment tools. Build audience syncs, transactional messaging, campaign operations, and reporting workflows without leaving n8n.
 
 Get started with our [📚 integration guides](https://docs.bentonow.com), or [📘 browse the API reference](https://docs.bentonow.com/subscribers).
 
@@ -28,15 +28,15 @@ Get started with our [📚 integration guides](https://docs.bentonow.com), or [�
 
 ## Features
 
-- **Subscriber Management**: Create, update, and retrieve subscriber information with custom fields and tags
+- **Subscriber Lifecycle**: Create, update, and retrieve subscriber information with custom fields and tags
+- **Audience Schema**: List and create Bento fields and tags directly from n8n
+- **Automation Content**: Inspect sequences and workflows, create sequence emails, and manage Bento email templates
+- **Transactional & Campaign Messaging**: Send transactional emails, list broadcasts, and queue broadcast sends with safety checks
+- **Subscriber Commands**: Execute powerful commands like adding/removing tags, managing fields, subscribing, unsubscribing, and changing email addresses
 - **Event Tracking**: Track custom events and user behavior for advanced segmentation and automation
-- **Transactional Emails**: Send personalized transactional emails with HTML/text content and template variables
-- **Subscriber Commands**: Execute powerful commands like adding/removing tags, managing fields, and subscription status
-- **Audience Schema & Content**: Create fields and tags, inspect sequences and workflows, and manage Bento email templates
 - **Email Validation**: Validate email addresses for spam/throwaway detection using Bento's validation service
-- **Utility Tools**: Run blacklist checks and content moderation via Bento's experimental services
-- **Analytics Insights**: Retrieve site-wide and segment-level performance metrics without leaving n8n
-- **Broadcast Management**: List pending broadcasts and queue sends with safety checks
+- **Utility & Enrichment Tools**: Run blacklist checks, content moderation, gender guess, and geolocation lookups via Bento's experimental services
+- **Analytics Insights**: Retrieve site-wide, segment-level, and report-level performance metrics without leaving n8n
 - **Security First**: Built-in input validation, HTML sanitization, and secure error handling
 - **Rate Limiting**: Intelligent retry logic with exponential backoff for reliable API communication
 
@@ -97,6 +97,19 @@ After installation, you'll need to set up your Bento API credentials:
 ## Operations
 
 The Bento node supports the following operations:
+
+### Operation Matrix
+
+This package currently exposes **25 operations** inside the Bento node:
+
+| Category | Operations |
+| --- | --- |
+| Subscribers | Create Subscriber, Get Subscriber, Update Subscriber, Subscriber Command |
+| Audience Schema | List Fields, Create Field, List Tags, Create Tag |
+| Automation Content | List Sequences, Create Sequence Email, List Workflows, Get Email Template, Update Email Template |
+| Messaging | Track Event, Send Transactional Email, List Broadcasts, Send Broadcast |
+| Analytics | Site Metrics, Segment Metrics, Report Metrics |
+| Validation & Enrichment | Validate Email, Blacklist Check, Content Moderation, Gender Guess, Geolocation Lookup |
 
 ### Create Subscriber
 
@@ -398,6 +411,19 @@ Execute commands on subscribers to manage tags, fields, and subscription status.
 - **Unsubscribe**: Unsubscribe the email address
 - **Change Email**: Update the subscriber's email address
 
+**Command Parameters:**
+
+| Command | Extra Parameters |
+| --- | --- |
+| Add Tag | `Tag/Field Name` |
+| Remove Tag | `Tag/Field Name` |
+| Add Tag via Event | `Tag/Field Name` |
+| Add Field | `Field Key`, `Field Value` |
+| Remove Field | `Tag/Field Name` |
+| Subscribe | None |
+| Unsubscribe | None |
+| Change Email | `New Email` |
+
 **Example Use Cases:**
 
 - Segment subscribers with tags based on behavior
@@ -655,6 +681,9 @@ Submit a broadcast batch to Bento’s `/batch/broadcasts` endpoint.
 The node uses the following Bento API endpoints:
 
 - `POST /api/v1/batch/events` - For creating subscribers and tracking events
+- `POST /api/v1/batch/subscribers` - For updating subscriber information
+- `GET /api/v1/fetch/subscribers?email=...` - For retrieving subscriber information
+- `POST /api/v1/fetch/commands` - For executing subscriber commands
 - `GET /api/v1/fetch/fields` - For listing Bento field definitions
 - `POST /api/v1/fetch/fields` - For creating Bento field definitions
 - `GET /api/v1/fetch/tags` - For listing Bento tags
@@ -664,11 +693,17 @@ The node uses the following Bento API endpoints:
 - `GET /api/v1/fetch/workflows` - For listing Bento workflows
 - `GET /api/v1/fetch/emails/templates/:id` - For retrieving Bento email templates
 - `PATCH /api/v1/fetch/emails/templates/:id` - For updating Bento email templates
-- `GET /api/v1/fetch/subscribers` - For retrieving subscriber information
-- `POST /api/v1/batch/subscribers` - For updating subscriber information
 - `POST /api/v1/batch/emails` - For sending transactional emails
-- `POST /api/v1/fetch/commands` - For executing subscriber commands
-- `POST /api/v1/experimental/validation` - For email validation
+- `GET /api/v1/fetch/broadcasts` - For listing broadcasts
+- `POST /api/v1/batch/broadcasts` - For submitting broadcast batches
+- `GET /api/v1/stats/site` - For retrieving site-level metrics
+- `GET /api/v1/stats/segment?segment_id=...` - For retrieving segment-level metrics
+- `GET /api/v1/stats/report?report_id=...` - For retrieving report-level metrics
+- `POST /api/v1/experimental/validation?email=...` - For email validation
+- `GET /api/v1/experimental/blacklist?domain=...&ip=...` - For blacklist checks
+- `POST /api/v1/experimental/content_moderation` - For content moderation
+- `POST /api/v1/experimental/gender?name=...&email=...` - For gender guess
+- `GET /api/v1/experimental/geolocation?ip=...&user_agent=...` - For geolocation lookup
 
 ### Limitations
 
